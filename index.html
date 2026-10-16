@@ -1,0 +1,3061 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lançamentos de Campo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      body {
+        background: #f4f6f5;
+        color: #1f2937;
+        min-height: 100vh;
+      }
+      header {
+        background: #166534;
+        color: #fff;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      header h1 {
+        font-size: 1.25rem;
+      }
+      #dataHoje {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      .abas {
+        display: flex;
+        background: #14532d;
+        padding: 0 12px;
+        gap: 4px;
+        overflow-x: auto;
+      }
+      .aba {
+        background: transparent;
+        border: none;
+        color: #d1fae5;
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .aba:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .aba.ativa {
+        color: #fff;
+        border-bottom-color: #4ade80;
+        font-weight: 600;
+      }
+      main {
+        padding: 20px;
+      }
+      .conteudo-aba {
+        display: none;
+      }
+      .conteudo-aba.ativo {
+        display: block;
+      }
+      .conteudo-aba h2 {
+        margin-bottom: 12px;
+        color: #166534;
+      }
+
+      .barra-semanas {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+      }
+      .nav-semana {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-semana {
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 40px;
+      }
+      .btn-semana:hover {
+        background: #15803d;
+      }
+      .label-semana {
+        font-weight: 700;
+        color: #166534;
+        font-size: 1rem;
+        min-width: 110px;
+        text-align: center;
+      }
+
+      .abas-dias {
+        display: flex;
+        gap: 6px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 6px;
+        margin-bottom: 14px;
+        overflow-x: auto;
+      }
+      .aba-dia {
+        flex: 1;
+        min-width: 100px;
+        background: #f3f4f6;
+        border: 2px solid transparent;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .aba-dia:hover {
+        background: #e5e7eb;
+      }
+      .aba-dia.ativa {
+        background: #16a34a;
+        color: #fff;
+        border-color: #15803d;
+      }
+
+      .barra-acoes {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .barra-acoes .grupo-data {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 6px 12px;
+      }
+      .barra-acoes .grupo-data label {
+        font-weight: 700;
+        color: #166534;
+        font-size: 0.9rem;
+      }
+      .barra-acoes .grupo-data input[type="date"],
+      .barra-acoes .grupo-data input[type="number"] {
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        color: #14532d;
+        font-weight: 600;
+        outline: none;
+      }
+      .barra-acoes .grupo-data input[type="number"] {
+        width: 80px;
+        text-align: center;
+      }
+      .barra-acoes .grupo-data input:focus {
+        border-color: #16a34a;
+      }
+      #diaSemanaPreview {
+        font-weight: 700;
+        color: #166534;
+        font-size: 0.85rem;
+        background: #dcfce7;
+        padding: 3px 10px;
+        border-radius: 6px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.15s;
+      }
+      .btn-verde {
+        background: #16a34a;
+        color: #fff;
+      }
+      .btn-verde:hover {
+        background: #15803d;
+      }
+      .btn-cinza {
+        background: #e5e7eb;
+        color: #374151;
+      }
+      .btn-cinza:hover {
+        background: #d1d5db;
+      }
+      .btn-pdf {
+        background: #dc2626;
+        color: #fff;
+      }
+      .btn-pdf:hover {
+        background: #b91c1c;
+      }
+
+      .area-tabelas {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 16px;
+        align-items: flex-start;
+      }
+      .coluna-agente {
+        flex: 0 0 auto;
+        width: 420px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .coluna-agente.inativo {
+        opacity: 0.55;
+        background: #f9fafb;
+      }
+      .coluna-agente.total {
+        border: 2px solid #16a34a;
+        background: #f0fdf4;
+      }
+      .cabecalho-agente {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        border-bottom: 2px solid #16a34a;
+        padding-bottom: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 4px;
+      }
+      .cabecalho-agente h3 {
+        font-size: 1rem;
+        color: #166534;
+      }
+      .cabecalho-agente .acoes {
+        display: flex;
+        gap: 4px;
+      }
+      .cabecalho-agente .acoes button {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .tag-inativo {
+        font-size: 0.7rem;
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .bloco-tabela {
+        width: 100%;
+      }
+      .bloco-tabela table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.68rem;
+        table-layout: fixed;
+      }
+      .bloco-tabela th,
+      .bloco-tabela td {
+        border: 1px solid #cbd5e1;
+        padding: 3px 2px;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .bloco-tabela th {
+        background: #dcfce7;
+        color: #14532d;
+        font-weight: 700;
+      }
+      .linha-identificacao th {
+        background: #bbf7d0;
+        color: #14532d;
+        font-weight: 700;
+        font-size: 0.7rem;
+        padding: 4px 4px;
+      }
+      .linha-identificacao input.nome-agente {
+        width: 100%;
+        border: 1px solid transparent;
+        background: transparent;
+        text-align: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #14532d;
+        padding: 3px 2px;
+        border-radius: 4px;
+        outline: none;
+        font-family: inherit;
+      }
+      .linha-identificacao input.nome-agente:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .linha-identificacao input.nome-agente:focus {
+        background: #fff;
+        border-color: #16a34a;
+      }
+      .col-total {
+        background: #fef3c7 !important;
+        font-weight: 700;
+        color: #92400e;
+      }
+      .col-calculada {
+        background: #dbeafe !important;
+        font-weight: 700;
+        color: #1e40af;
+      }
+      .celula-rotulo {
+        background: #f8fafc;
+        font-weight: 700;
+        color: #14532d;
+        text-align: left;
+        padding-left: 6px !important;
+      }
+      .linha-total-final td {
+        background: #dcfce7 !important;
+        font-weight: 700;
+        color: #14532d;
+      }
+      .bloco-tabela td.celula-input {
+        padding: 0;
+      }
+      .bloco-tabela td.celula-input input,
+      .bloco-tabela td.celula-input select {
+        width: 100%;
+        border: none;
+        background: transparent;
+        text-align: center;
+        padding: 4px 2px;
+        font-size: 0.68rem;
+        outline: none;
+      }
+      .bloco-tabela td.celula-input input:focus,
+      .bloco-tabela td.celula-input select:focus {
+        background: #fef9c3;
+      }
+      .separador-bloco {
+        height: 6px;
+        border-bottom: 1px dashed #cbd5e1;
+        margin: 4px 0;
+      }
+      .titulo-depositos {
+        background: #bbf7d0 !important;
+        color: #14532d;
+        font-weight: 700;
+        text-align: center;
+        font-size: 0.78rem;
+        padding: 5px 4px;
+      }
+      .bloco-depositos th {
+        background: #dcfce7;
+        font-size: 0.62rem;
+        padding: 4px 1px;
+        line-height: 1.1;
+      }
+
+      /* ====== Aba Resumo ====== */
+      .area-impressao {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 32px 28px;
+        margin-bottom: 16px;
+      }
+      .cabecalho-resumo {
+        margin-bottom: 36px;
+        padding-bottom: 24px;
+        border-bottom: 1px dashed #cbd5e1;
+      }
+      .cabecalho-resumo .titulo-doc {
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #14532d;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 1.4;
+        margin-bottom: 10px;
+      }
+      .cabecalho-resumo .subtitulo-doc {
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #166534;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 36px;
+      }
+      .cabecalho-campos {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px 24px;
+        margin-bottom: 18px;
+      }
+      .cabecalho-campos.segunda-linha {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px 20px;
+        margin-bottom: 0;
+      }
+      .campo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+      }
+      .campo label {
+        font-weight: 700;
+        color: #14532d;
+        white-space: nowrap;
+      }
+      .campo input {
+        flex: 1;
+        min-width: 40px;
+        border: none;
+        border-bottom: 1px solid #94a3b8;
+        background: transparent;
+        padding: 4px 5px;
+        font-size: 0.8rem;
+        color: #1f2937;
+        font-family: inherit;
+        outline: none;
+      }
+      .campo input:focus {
+        border-bottom-color: #16a34a;
+        background: #f0fdf4;
+      }
+
+      /* ====== Tabela Resumo ====== */
+      .resumo-wrapper {
+        overflow-x: auto;
+        margin-top: 8px;
+      }
+      .resumo-tabela {
+        border-collapse: collapse;
+        font-size: 0.68rem;
+        width: 100%;
+        table-layout: fixed;
+        min-width: 1600px;
+      }
+      .resumo-tabela th,
+      .resumo-tabela td {
+        border: 1px solid #64748b;
+        padding: 5px 3px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .resumo-tabela th.cabecalho-titulo {
+        background: #bbf7d0;
+        color: #14532d;
+        font-weight: 700;
+        font-size: 0.66rem;
+        padding: 7px 4px;
+      }
+      .resumo-tabela th.cabecalho-destaque {
+        background: #fef3c7;
+        color: #92400e;
+        font-weight: 700;
+        font-size: 0.66rem;
+        padding: 7px 4px;
+      }
+      .resumo-tabela th.cabecalho-calculado {
+        background: #dbeafe;
+        color: #1e40af;
+        font-weight: 700;
+        font-size: 0.66rem;
+        padding: 7px 4px;
+      }
+      .resumo-tabela td.celula-rotulo-dia {
+        background: #dcfce7;
+        color: #14532d;
+        font-weight: 700;
+        text-align: left;
+        padding-left: 8px;
+        font-size: 0.75rem;
+      }
+      .resumo-tabela td.celula-vazia {
+        background: #fff;
+        color: #94a3b8;
+      }
+      .resumo-tabela td.celula-dado {
+        background: #fff;
+      }
+      .resumo-tabela td.celula-data {
+        background: #f0fdf4;
+        font-weight: 600;
+      }
+      .resumo-tabela td.celula-dia-semana {
+        background: #f0fdf4;
+        font-weight: 600;
+        font-size: 0.72rem;
+      }
+      .resumo-tabela td.col-calculada {
+        background: #dbeafe;
+        font-weight: 700;
+        color: #1e40af;
+      }
+      .resumo-tabela tr.linha-total-resumo td {
+        background: #dcfce7 !important;
+        font-weight: 700;
+        color: #14532d;
+      }
+
+      .resumo-tabela td.celula-editavel {
+        padding: 0;
+        background: #fff;
+      }
+      .resumo-tabela td.celula-editavel input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        text-align: center;
+        padding: 6px 4px;
+        font-size: 0.72rem;
+        font-family: inherit;
+        outline: none;
+      }
+      .resumo-tabela td.celula-editavel input:focus {
+        background: #fef9c3;
+      }
+      .resumo-tabela td.celula-editavel input.texto-livre {
+        text-align: left;
+      }
+
+      .resumo-tabela col.col-data {
+        width: 78px;
+      }
+      .resumo-tabela col.col-dia {
+        width: 92px;
+      }
+      .resumo-tabela col.col-small {
+        width: 40px;
+      }
+      .resumo-tabela col.col-medium {
+        width: 48px;
+      }
+      .resumo-tabela col.col-wide {
+        width: 58px;
+      }
+      .resumo-tabela col.col-obs {
+        width: 130px;
+      }
+
+      /* ====== Observação (entre tabela e rodapé) ====== */
+      .rodape-observacao {
+        margin-top: 32px;
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px dashed #cbd5e1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .rodape-observacao label {
+        font-weight: 700;
+        color: #14532d;
+        font-size: 0.9rem;
+      }
+      .rodape-observacao textarea {
+        width: 100%;
+        min-height: 90px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        font-family: inherit;
+        color: #1f2937;
+        resize: vertical;
+        outline: none;
+        line-height: 1.5;
+      }
+      .rodape-observacao textarea:focus {
+        border-color: #16a34a;
+        background: #f0fdf4;
+      }
+
+      /* ====== Responsável / Data (rodapé final) ====== */
+      .rodape-resumo {
+        margin-top: 0;
+        padding-top: 0;
+        display: flex;
+        justify-content: space-around;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .campo-rodape {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        max-width: 420px;
+      }
+      .campo-rodape label {
+        font-weight: 700;
+        color: #14532d;
+        white-space: nowrap;
+        font-size: 0.85rem;
+      }
+      .campo-rodape input {
+        flex: 1;
+        border: none;
+        border-bottom: 1px solid #94a3b8;
+        background: transparent;
+        padding: 4px 6px;
+        font-size: 0.85rem;
+        font-family: inherit;
+        color: #1f2937;
+        outline: none;
+      }
+      .campo-rodape input:focus {
+        border-bottom-color: #16a34a;
+        background: #f0fdf4;
+      }
+
+      .aviso {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        color: #14532d;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 12mm;
+        }
+        body {
+          background: #fff;
+        }
+        header,
+        nav.abas,
+        .barra-semanas,
+        .aviso,
+        .abas-dias {
+          display: none !important;
+        }
+        main {
+          padding: 0 !important;
+        }
+        .conteudo-aba {
+          display: none !important;
+        }
+        .conteudo-aba.ativo {
+          display: block !important;
+        }
+        #aba-lancamentos {
+          display: none !important;
+        }
+        #aba-resumo {
+          display: block !important;
+        }
+        .conteudo-aba h2 {
+          display: none;
+        }
+        .area-impressao {
+          border: none;
+          border-radius: 0;
+          padding: 0;
+          margin: 0;
+          background: #fff;
+          page-break-inside: avoid;
+        }
+        .cabecalho-resumo {
+          margin-bottom: 18px;
+          padding-bottom: 12px;
+          border-bottom: 1px dashed #94a3b8;
+        }
+        .cabecalho-resumo .titulo-doc {
+          font-size: 12pt;
+          margin-bottom: 4px;
+        }
+        .cabecalho-resumo .subtitulo-doc {
+          font-size: 10pt;
+          margin-bottom: 16px;
+        }
+        .cabecalho-campos {
+          gap: 8px 14px;
+          margin-bottom: 8px;
+        }
+        .cabecalho-campos.segunda-linha {
+          gap: 8px 12px;
+        }
+        .campo {
+          font-size: 9pt;
+          gap: 4px;
+        }
+        .campo label {
+          font-size: 9pt;
+        }
+        .campo input {
+          border-bottom: 1px solid #000;
+          font-size: 9pt;
+          padding: 1px 3px;
+          color: #000;
+        }
+
+        .resumo-wrapper {
+          overflow: visible !important;
+          margin-top: 4px;
+        }
+        .resumo-tabela {
+          font-size: 6.5pt;
+          width: 100%;
+          min-width: 0 !important;
+        }
+        .resumo-tabela col.col-data {
+          width: 5.5%;
+        }
+        .resumo-tabela col.col-dia {
+          width: 6.5%;
+        }
+        .resumo-tabela col.col-small {
+          width: 2.6%;
+        }
+        .resumo-tabela col.col-medium {
+          width: 3.1%;
+        }
+        .resumo-tabela col.col-wide {
+          width: 3.8%;
+        }
+        .resumo-tabela col.col-obs {
+          width: 8.5%;
+        }
+        .resumo-tabela th,
+        .resumo-tabela td {
+          padding: 2px 2px;
+          border: 0.5px solid #000;
+        }
+        .resumo-tabela th.cabecalho-titulo,
+        .resumo-tabela th.cabecalho-destaque,
+        .resumo-tabela th.cabecalho-calculado {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          font-size: 5.5pt;
+          padding: 3px 1px;
+        }
+        .resumo-tabela td.celula-rotulo-dia {
+          font-size: 6.5pt;
+        }
+        .resumo-tabela td.celula-data,
+        .resumo-tabela td.celula-dia-semana {
+          font-size: 6pt;
+        }
+        .resumo-tabela td.celula-editavel input {
+          font-size: 6pt;
+          padding: 2px 2px;
+        }
+
+        .rodape-observacao {
+          margin-top: 14px;
+          margin-bottom: 12px;
+          padding-bottom: 12px;
+          border-bottom: 1px dashed #94a3b8;
+          gap: 4px;
+        }
+        .rodape-observacao label {
+          font-size: 10pt;
+        }
+        .rodape-observacao textarea {
+          font-size: 9pt;
+          padding: 6px 8px;
+          min-height: 50px;
+          border: 1px solid #000;
+          background: #fff;
+          color: #000;
+          resize: none;
+        }
+
+        .rodape-resumo {
+          margin-top: 0;
+          padding-top: 0;
+          gap: 40px;
+        }
+        .campo-rodape {
+          font-size: 10pt;
+          gap: 8px;
+        }
+        .campo-rodape label {
+          font-size: 10pt;
+        }
+        .campo-rodape input {
+          border-bottom: 1px solid #000;
+          font-size: 10pt;
+          padding: 2px 4px;
+          color: #000;
+        }
+
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🌿 Lançamentos de Campo</h1>
+      <span id="dataHoje"></span>
+    </header>
+
+    <nav class="abas">
+      <button class="aba ativa" data-aba="lancamentos">
+        📝 Lançamentos Diários
+      </button>
+      <button class="aba" data-aba="resumo">📊 Resumo da Semana</button>
+    </nav>
+
+    <main>
+      <section id="aba-lancamentos" class="conteudo-aba ativo">
+        <div class="barra-semanas">
+          <div class="nav-semana">
+            <button class="btn-semana" id="btnSemanaAnterior">◀</button>
+            <span class="label-semana" id="labelSemana">Semana 40</span>
+            <button class="btn-semana" id="btnSemanaProxima">▶</button>
+          </div>
+          <button class="btn btn-verde" id="btnNovaSemana">
+            + Nova semana
+          </button>
+        </div>
+
+        <div class="abas-dias" id="abasDias">
+          <button class="aba-dia ativa" data-dia="segunda">Segunda</button>
+          <button class="aba-dia" data-dia="terca">Terça</button>
+          <button class="aba-dia" data-dia="quarta">Quarta</button>
+          <button class="aba-dia" data-dia="quinta">Quinta</button>
+          <button class="aba-dia" data-dia="sexta">Sexta</button>
+        </div>
+
+        <div class="barra-acoes">
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              flex-wrap: wrap;
+              align-items: center;
+            "
+          >
+            <div class="grupo-data">
+              <label for="dataDia">📅 Data:</label>
+              <input type="date" id="dataDia" />
+              <span id="diaSemanaPreview">—</span>
+            </div>
+            <div class="grupo-data">
+              <label for="programadosDia">👥 Programados:</label>
+              <input
+                type="number"
+                id="programadosDia"
+                min="0"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <button id="btnAdicionarAgente" class="btn btn-verde">
+            + Adicionar agente
+          </button>
+        </div>
+
+        <div class="area-tabelas" id="areaTabelas"></div>
+      </section>
+
+      <section id="aba-resumo" class="conteudo-aba">
+        <h2>Resumo da Semana</h2>
+
+        <div class="barra-semanas">
+          <div class="nav-semana">
+            <button class="btn-semana" id="btnSemanaAnteriorResumo">◀</button>
+            <span class="label-semana" id="labelSemanaResumo">Semana 40</span>
+            <button class="btn-semana" id="btnSemanaProximaResumo">▶</button>
+          </div>
+          <button class="btn btn-pdf" id="btnImprimirPDF">🖨️ Gerar PDF</button>
+        </div>
+
+        <div class="aviso">
+          ✅ Campo Observação agora fica entre a tabela e o rodapé
+          (Responsável/Data).
+        </div>
+
+        <div class="area-impressao" id="areaImpressao">
+          <div class="cabecalho-resumo">
+            <div class="titulo-doc">
+              PROGRAMA MUNICIPAL DE CONTROLE DA DENGUE - PMCD
+            </div>
+            <div class="subtitulo-doc">RESUMO DOS TRABALHOS DE CAMPO</div>
+
+            <div class="cabecalho-campos">
+              <div class="campo">
+                <label>Bairro:</label
+                ><input type="text" id="cabBairro" data-cab="bairro" />
+              </div>
+              <div class="campo">
+                <label>Estrato:</label
+                ><input type="text" id="cabEstrato" data-cab="estrato" />
+              </div>
+              <div class="campo">
+                <label>Equipe:</label
+                ><input type="text" id="cabEquipe" data-cab="equipe" />
+              </div>
+              <div class="campo">
+                <label>Supervisor:</label
+                ><input type="text" id="cabSupervisor" data-cab="supervisor" />
+              </div>
+            </div>
+
+            <div class="cabecalho-campos segunda-linha">
+              <div class="campo">
+                <label>Ciclo:</label
+                ><input type="text" id="cabCiclo" data-cab="ciclo" />
+              </div>
+              <div class="campo">
+                <label>Início:</label
+                ><input
+                  type="text"
+                  id="cabCicloInicio"
+                  data-cab="cicloInicio"
+                  placeholder="__/__/____"
+                />
+              </div>
+              <div class="campo">
+                <label>Término:</label
+                ><input
+                  type="text"
+                  id="cabCicloTermino"
+                  data-cab="cicloTermino"
+                  placeholder="__/__/____"
+                />
+              </div>
+              <div class="campo">
+                <label>Semana:</label
+                ><input type="text" id="cabSemana" data-cab="semana" />
+              </div>
+              <div class="campo">
+                <label>Início:</label
+                ><input
+                  type="text"
+                  id="cabSemanaInicio"
+                  data-cab="semanaInicio"
+                  placeholder="__/__/____"
+                />
+              </div>
+              <div class="campo">
+                <label>Término:</label
+                ><input
+                  type="text"
+                  id="cabSemanaTermino"
+                  data-cab="semanaTermino"
+                  placeholder="__/__/____"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="resumo-wrapper" id="resumoWrapper"></div>
+
+          <!-- Observação: entre a tabela e o rodapé -->
+          <div class="rodape-observacao">
+            <label for="rodapeObservacao">Observação:</label>
+            <textarea
+              id="rodapeObservacao"
+              data-rodape="observacao"
+              placeholder="Registre aqui informações relevantes sobre as ocorrências da semana..."
+              rows="4"
+            ></textarea>
+          </div>
+
+          <!-- Rodapé final: Responsável / Data -->
+          <div class="rodape-resumo">
+            <div class="campo-rodape">
+              <label>Responsável:</label
+              ><input
+                type="text"
+                id="rodapeResponsavel"
+                data-rodape="responsavel"
+              />
+            </div>
+            <div class="campo-rodape">
+              <label>Data:</label
+              ><input
+                type="text"
+                id="rodapeData"
+                data-rodape="data"
+                placeholder="__/__/____"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      /* =======================================================
+   LANÇAMENTOS DE CAMPO v31
+   ======================================================= */
+
+      const STORAGE_KEY = "lancamentos_campo_v26";
+      const NUM_COLUNAS = 9;
+
+      const DIAS_SEMANA = ["segunda", "terca", "quarta", "quinta", "sexta"];
+      const NOMES_DIAS = {
+        segunda: "Segunda-feira",
+        terca: "Terça-feira",
+        quarta: "Quarta-feira",
+        quinta: "Quinta-feira",
+        sexta: "Sexta-feira",
+      };
+
+      const LINHAS_BLOCO_1 = [
+        {
+          rotulo: "Quarteirão",
+          tipo: "quarteirao",
+          somaNoTotal: false,
+          contaSim: false,
+        },
+        {
+          rotulo: "Concluído?",
+          tipo: "concluido",
+          somaNoTotal: false,
+          contaSim: true,
+        },
+        { rotulo: "R", tipo: "numero", somaNoTotal: true, contaSim: false },
+        { rotulo: "C", tipo: "numero", somaNoTotal: true, contaSim: false },
+        { rotulo: "TB", tipo: "numero", somaNoTotal: true, contaSim: false },
+        { rotulo: "PE", tipo: "numero", somaNoTotal: false, contaSim: false },
+        { rotulo: "O", tipo: "numero", somaNoTotal: true, contaSim: false },
+      ];
+
+      const LINHAS_BLOCO_2 = [
+        { rotulo: "Fechados", tipo: "numero" },
+        { rotulo: "Recuperados", tipo: "numero" },
+        { rotulo: "Recusados", tipo: "numero" },
+        { rotulo: "Abandonados", tipo: "numero" },
+      ];
+
+      const LINHAS_BLOCO_4 = [{ rotulo: "Eliminados", tipo: "numero" }];
+
+      const TIPOS_DEPOSITOS = ["A1", "A2", "B", "C", "D1", "D2", "E"];
+      const COLUNAS_DEPOSITOS = [
+        "Encontrado",
+        "Não inspecionados",
+        "Inspecionados",
+        "Focados",
+        "Tratados",
+        "Litros",
+        "Gramas",
+        "Total",
+      ];
+      const COL_ENCONTRADO = 0,
+        COL_NAO_INSP = 1,
+        COL_INSP = 2,
+        COL_FOCADOS = 3,
+        COL_TRATADOS = 4,
+        COL_LITROS = 5,
+        COL_GRAMAS = 6,
+        COL_TOTAL_DEP = 7;
+
+      const COLUNAS_1_5 = ["Data", "Dia", "Prog.", "Trab.", "Quart."];
+      const COLUNAS_6_11 = ["R", "C", "TB", "PE", "O", "TOTAL"];
+      const COLUNAS_12_20 = [
+        "Trat.",
+        "Fec.",
+        "Recp.",
+        "Recs.",
+        "Aband.",
+        "Inf.",
+        "Pend.",
+        "IP",
+        "Rend.",
+      ];
+      const COLUNAS_21_28 = ["A1", "A2", "B", "C", "D1", "D2", "E", "TOTAL"];
+      const COLUNAS_29_35 = [
+        "Trat.",
+        "Lit.",
+        "g.",
+        "elim.",
+        "Foc.",
+        "Sup.",
+        "OBSERVAÇÃO",
+      ];
+
+      const LARGURAS_COLUNAS = [
+        "col-data",
+        "col-dia",
+        "col-small",
+        "col-small",
+        "col-medium",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-medium",
+        "col-medium",
+        "col-small",
+        "col-medium",
+        "col-small",
+        "col-medium",
+        "col-small",
+        "col-medium",
+        "col-small",
+        "col-medium",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-wide",
+        "col-medium",
+        "col-medium",
+        "col-small",
+        "col-small",
+        "col-medium",
+        "col-medium",
+        "col-small",
+        "col-obs",
+      ];
+
+      const CAMPOS_CABECALHO = [
+        "bairro",
+        "estrato",
+        "equipe",
+        "supervisor",
+        "ciclo",
+        "cicloInicio",
+        "cicloTermino",
+        "semana",
+        "semanaInicio",
+        "semanaTermino",
+      ];
+      const CAMPOS_RODAPE = ["responsavel", "data", "observacao"];
+
+      let estado = { semanaAtiva: null, diaAtivo: "segunda", semanas: {} };
+
+      const DIAS_SEMANA_PT = [
+        "Domingo",
+        "Segunda-feira",
+        "Terça-feira",
+        "Quarta-feira",
+        "Quinta-feira",
+        "Sexta-feira",
+        "Sábado",
+      ];
+
+      function diaSemanaDeISO(iso) {
+        if (!iso) return "";
+        const partes = String(iso).split("-").map(Number);
+        if (partes.length !== 3 || partes.some(isNaN)) return "";
+        const [a, m, d] = partes;
+        const data = new Date(a, m - 1, d);
+        if (isNaN(data.getTime())) return "";
+        return DIAS_SEMANA_PT[data.getDay()];
+      }
+
+      function nomeDiaExibido(iso, chaveDia) {
+        const nome = diaSemanaDeISO(iso);
+        if (nome) return nome;
+        return NOMES_DIAS[chaveDia] || "";
+      }
+
+      function semanaAtualDoAno() {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+        const week1 = new Date(d.getFullYear(), 0, 4);
+        return (
+          1 +
+          Math.round(
+            ((d - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7,
+          )
+        );
+      }
+
+      function hojeISO() {
+        const h = new Date();
+        const d = String(h.getDate()).padStart(2, "0");
+        const m = String(h.getMonth() + 1).padStart(2, "0");
+        const a = h.getFullYear();
+        return `${a}-${m}-${d}`;
+      }
+
+      function formatarDataBR(iso) {
+        if (!iso) return "";
+        const [a, m, d] = iso.split("-");
+        return `${d}/${m}/${a}`;
+      }
+
+      function semana() {
+        return estado.semanas[estado.semanaAtiva];
+      }
+      function diaAtual() {
+        return semana().dias[estado.diaAtivo];
+      }
+      function valoresDoDia(agente) {
+        if (!agente.valores) agente.valores = {};
+        return agente.valores;
+      }
+      function num(v) {
+        if (v === undefined || v === null || v === "") return 0;
+        const n = Number(v);
+        return isNaN(n) ? 0 : n;
+      }
+
+      function calcularInformadoColuna(valores, c) {
+        const R = num(valores[`b1-r2-c${c}`]);
+        const C = num(valores[`b1-r3-c${c}`]);
+        const TB = num(valores[`b1-r4-c${c}`]);
+        const O = num(valores[`b1-r6-c${c}`]);
+        const Fec = num(valores[`b2-r0-c${c}`]);
+        const Rec = num(valores[`b2-r1-c${c}`]);
+        const Rcs = num(valores[`b2-r2-c${c}`]);
+        const Aba = num(valores[`b2-r3-c${c}`]);
+        return R + C + TB + O + Fec + Rcs + Aba - Rec;
+      }
+
+      function criarCabecalhoVazio() {
+        const c = {};
+        CAMPOS_CABECALHO.forEach((k) => (c[k] = ""));
+        return c;
+      }
+      function criarRodapeVazio() {
+        const r = {};
+        CAMPOS_RODAPE.forEach((k) => (r[k] = ""));
+        return r;
+      }
+
+      function criarSemana() {
+        const dias = {};
+        DIAS_SEMANA.forEach((dia) => {
+          dias[dia] = { data: hojeISO(), programados: "", agentes: [] };
+          for (let i = 1; i <= 4; i++) {
+            dias[dia].agentes.push(criarAgente("Agente " + i));
+          }
+        });
+        return {
+          dias,
+          resumo: { valores: {} },
+          cabecalho: criarCabecalhoVazio(),
+          rodape: criarRodapeVazio(),
+        };
+      }
+
+      function criarAgente(nome) {
+        return {
+          id: "ag_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+          nome,
+          ativo: true,
+          valores: {},
+        };
+      }
+
+      function salvar() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+      }
+
+      function carregar() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          try {
+            estado = JSON.parse(raw);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        if (!estado.semanas) estado.semanas = {};
+        if (!estado.diaAtivo) estado.diaAtivo = "segunda";
+        if (Object.keys(estado.semanas).length === 0) {
+          const s = String(semanaAtualDoAno());
+          estado.semanas[s] = criarSemana();
+          estado.semanaAtiva = s;
+        }
+        if (!estado.semanaAtiva || !estado.semanas[estado.semanaAtiva]) {
+          estado.semanaAtiva = Object.keys(estado.semanas)[0];
+        }
+        Object.keys(estado.semanas).forEach((semKey) => {
+          const sem = estado.semanas[semKey];
+          if (!sem.dias) sem.dias = {};
+          if (!sem.resumo) sem.resumo = { valores: {} };
+          if (!sem.resumo.valores) sem.resumo.valores = {};
+          if (!sem.cabecalho) sem.cabecalho = criarCabecalhoVazio();
+          if (!sem.rodape) sem.rodape = criarRodapeVazio();
+          CAMPOS_CABECALHO.forEach((k) => {
+            if (sem.cabecalho[k] === undefined) sem.cabecalho[k] = "";
+          });
+          CAMPOS_RODAPE.forEach((k) => {
+            if (sem.rodape[k] === undefined) sem.rodape[k] = "";
+          });
+          DIAS_SEMANA.forEach((dia) => {
+            if (!sem.dias[dia]) {
+              sem.dias[dia] = { data: hojeISO(), programados: "", agentes: [] };
+              for (let i = 1; i <= 4; i++) {
+                sem.dias[dia].agentes.push(criarAgente("Agente " + i));
+              }
+            }
+            if (!sem.dias[dia].data) sem.dias[dia].data = hojeISO();
+            if (sem.dias[dia].programados === undefined)
+              sem.dias[dia].programados = "";
+            if (!sem.dias[dia].agentes) sem.dias[dia].agentes = [];
+            sem.dias[dia].agentes.forEach((ag) => {
+              if (!ag.valores) ag.valores = {};
+            });
+          });
+        });
+        salvar();
+      }
+
+      function getResumoValor(chave, padrao = "") {
+        const sem = semana();
+        if (!sem.resumo) sem.resumo = { valores: {} };
+        if (!sem.resumo.valores) sem.resumo.valores = {};
+        if (sem.resumo.valores[chave] === undefined) return padrao;
+        return sem.resumo.valores[chave];
+      }
+
+      function setResumoValor(chave, valor) {
+        const sem = semana();
+        if (!sem.resumo) sem.resumo = { valores: {} };
+        if (!sem.resumo.valores) sem.resumo.valores = {};
+        sem.resumo.valores[chave] = valor;
+        salvar();
+      }
+
+      function renderizar() {
+        document.getElementById("labelSemana").textContent =
+          "Semana " + estado.semanaAtiva;
+        document.getElementById("labelSemanaResumo").textContent =
+          "Semana " + estado.semanaAtiva;
+
+        document.querySelectorAll(".aba-dia").forEach((b) => {
+          b.classList.toggle("ativa", b.dataset.dia === estado.diaAtivo);
+        });
+
+        const inputData = document.getElementById("dataDia");
+        if (inputData) inputData.value = diaAtual().data || hojeISO();
+
+        const preview = document.getElementById("diaSemanaPreview");
+        if (preview) {
+          const nome = nomeDiaExibido(diaAtual().data, estado.diaAtivo);
+          preview.textContent = nome || "—";
+        }
+
+        const inputProg = document.getElementById("programadosDia");
+        if (inputProg) inputProg.value = diaAtual().programados || "";
+
+        const area = document.getElementById("areaTabelas");
+        area.innerHTML = "";
+        diaAtual().agentes.forEach((ag) =>
+          area.appendChild(criarColunaAgente(ag)),
+        );
+        area.appendChild(criarColunaTotal());
+
+        renderizarCabecalhoResumo();
+        renderizarRodape();
+        renderizarResumo();
+      }
+
+      function renderizarCabecalhoResumo() {
+        const cab = semana().cabecalho || {};
+        document.querySelectorAll("[data-cab]").forEach((input) => {
+          input.value = cab[input.dataset.cab] || "";
+        });
+      }
+
+      function renderizarRodape() {
+        const rod = semana().rodape || {};
+        document.querySelectorAll("[data-rodape]").forEach((el) => {
+          const k = el.dataset.rodape;
+          el.value = rod[k] || "";
+        });
+      }
+
+      function criarColunaAgente(agente) {
+        const coluna = document.createElement("div");
+        coluna.className = "coluna-agente" + (agente.ativo ? "" : " inativo");
+        coluna.dataset.agenteId = agente.id;
+
+        const cab = document.createElement("div");
+        cab.className = "cabecalho-agente";
+
+        const titulo = document.createElement("h3");
+        titulo.textContent = agente.nome;
+        cab.appendChild(titulo);
+
+        if (!agente.ativo) {
+          const tag = document.createElement("span");
+          tag.className = "tag-inativo";
+          tag.textContent = "INATIVO";
+          cab.appendChild(tag);
+        }
+
+        const acoes = document.createElement("div");
+        acoes.className = "acoes";
+        const btnToggle = document.createElement("button");
+        btnToggle.className = agente.ativo ? "btn-cinza" : "btn-verde";
+        btnToggle.textContent = agente.ativo ? "Inativar" : "Reativar";
+        btnToggle.addEventListener("click", () => toggleAgente(agente.id));
+        acoes.appendChild(btnToggle);
+        cab.appendChild(acoes);
+        coluna.appendChild(cab);
+
+        coluna.appendChild(criarBloco1(agente));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarBlocoSimples(agente, "b2", LINHAS_BLOCO_2));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarBlocoCalculado(agente, "Informados"));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarBlocoSimples(agente, "b4", LINHAS_BLOCO_4));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarBlocoDepositos(agente));
+
+        return coluna;
+      }
+
+      function criarSeparador() {
+        const sep = document.createElement("div");
+        sep.className = "separador-bloco";
+        return sep;
+      }
+
+      function criarBloco1(agente) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const valores = valoresDoDia(agente);
+        const tabela = document.createElement("table");
+        const thead = document.createElement("thead");
+
+        const trId = document.createElement("tr");
+        trId.className = "linha-identificacao";
+
+        const thData = document.createElement("th");
+        thData.colSpan = 3;
+        thData.textContent = "📅 " + formatarDataBR(diaAtual().data);
+        trId.appendChild(thData);
+
+        const thDia = document.createElement("th");
+        thDia.colSpan = 3;
+        thDia.textContent =
+          "🗓 " + nomeDiaExibido(diaAtual().data, estado.diaAtivo);
+        trId.appendChild(thDia);
+
+        const thAgente = document.createElement("th");
+        thAgente.colSpan = 3;
+        const inputNome = document.createElement("input");
+        inputNome.type = "text";
+        inputNome.className = "nome-agente";
+        inputNome.value = agente.nome;
+        inputNome.placeholder = "Nome do agente";
+        inputNome.addEventListener("input", () => {
+          agente.nome = inputNome.value;
+          salvar();
+          const titulo = document.querySelector(
+            `.coluna-agente[data-agente-id="${agente.id}"] .cabecalho-agente h3`,
+          );
+          if (titulo) titulo.textContent = agente.nome;
+        });
+        thAgente.appendChild(inputNome);
+        trId.appendChild(thAgente);
+        thead.appendChild(trId);
+
+        const trHead = document.createElement("tr");
+        const thVazio = document.createElement("th");
+        thVazio.textContent = "";
+        trHead.appendChild(thVazio);
+        for (let i = 1; i <= 7; i++) {
+          const th = document.createElement("th");
+          th.textContent = i;
+          trHead.appendChild(th);
+        }
+        const thTotal = document.createElement("th");
+        thTotal.textContent = "TOTAL";
+        thTotal.className = "col-total";
+        trHead.appendChild(thTotal);
+        thead.appendChild(trHead);
+        tabela.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+          const tr = document.createElement("tr");
+          for (let c = 0; c < NUM_COLUNAS; c++) {
+            const td = document.createElement("td");
+            if (c === 0) {
+              td.className = "celula-rotulo";
+              td.textContent = linha.rotulo;
+            } else if (c === NUM_COLUNAS - 1) {
+              td.className = "col-total";
+              td.dataset.totalLinha = `${agente.id}-b1-r${rIndex}`;
+              td.textContent = "0";
+            } else {
+              td.className = "celula-input";
+              const chave = `b1-r${rIndex}-c${c}`;
+              if (linha.tipo === "concluido") {
+                const select = document.createElement("select");
+                select.innerHTML = `<option value=""></option><option value="Sim">Sim</option><option value="Não">Não</option>`;
+                select.value = valores[chave] || "";
+                select.addEventListener("change", () => {
+                  valores[chave] = select.value;
+                  salvar();
+                  atualizarTotais();
+                });
+                td.appendChild(select);
+              } else {
+                const input = document.createElement("input");
+                input.type = "text";
+                if (linha.tipo === "numero") input.inputMode = "numeric";
+                input.value = valores[chave] || "";
+                input.addEventListener("input", () => {
+                  valores[chave] = input.value;
+                  salvar();
+                  atualizarTotais();
+                });
+                td.appendChild(input);
+              }
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.classList.add("linha-total-final");
+        for (let c = 0; c < NUM_COLUNAS; c++) {
+          const td = document.createElement("td");
+          if (c === 0) {
+            td.className = "celula-rotulo";
+            td.textContent = "TOTAL";
+          } else if (c === NUM_COLUNAS - 1) {
+            td.className = "col-total";
+            td.dataset.totalGeral = agente.id;
+            td.textContent = "0";
+          } else {
+            td.dataset.totalDiaAgente = `${agente.id}-c${c}`;
+            td.textContent = "0";
+          }
+          trTotal.appendChild(td);
+        }
+        tbody.appendChild(trTotal);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarBlocoSimples(agente, blocoId, linhas) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const valores = valoresDoDia(agente);
+        const tabela = document.createElement("table");
+        const tbody = document.createElement("tbody");
+
+        linhas.forEach((linha, rIndex) => {
+          const tr = document.createElement("tr");
+          for (let c = 0; c < NUM_COLUNAS; c++) {
+            const td = document.createElement("td");
+            if (c === 0) {
+              td.className = "celula-rotulo";
+              td.textContent = linha.rotulo;
+            } else if (c === NUM_COLUNAS - 1) {
+              td.className = "col-total";
+              td.dataset.totalLinhaBloco = `${agente.id}-${blocoId}-r${rIndex}`;
+              td.textContent = "0";
+            } else {
+              td.className = "celula-input";
+              const chave = `${blocoId}-r${rIndex}-c${c}`;
+              const input = document.createElement("input");
+              input.type = "text";
+              input.inputMode = "numeric";
+              input.value = valores[chave] || "";
+              input.addEventListener("input", () => {
+                valores[chave] = input.value;
+                salvar();
+                atualizarTotais();
+              });
+              td.appendChild(input);
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarBlocoCalculado(agente, rotulo) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const tabela = document.createElement("table");
+        const tbody = document.createElement("tbody");
+        const tr = document.createElement("tr");
+
+        const tdRotulo = document.createElement("td");
+        tdRotulo.className = "celula-rotulo";
+        tdRotulo.textContent = rotulo;
+        tr.appendChild(tdRotulo);
+
+        for (let c = 1; c <= 7; c++) {
+          const td = document.createElement("td");
+          td.className = "col-calculada";
+          td.dataset.informadoDia = `${agente.id}-c${c}`;
+          td.textContent = "0";
+          tr.appendChild(td);
+        }
+        const tdTotal = document.createElement("td");
+        tdTotal.className = "col-total";
+        tdTotal.dataset.informadoTotal = agente.id;
+        tdTotal.textContent = "0";
+        tr.appendChild(tdTotal);
+        tbody.appendChild(tr);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarBlocoDepositos(agente) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela bloco-depositos";
+        const valores = valoresDoDia(agente);
+        const tabela = document.createElement("table");
+        const thead = document.createElement("thead");
+
+        const trTitulo = document.createElement("tr");
+        const thTitulo = document.createElement("th");
+        thTitulo.colSpan = 9;
+        thTitulo.className = "titulo-depositos";
+        thTitulo.textContent = "Depósitos";
+        trTitulo.appendChild(thTitulo);
+        thead.appendChild(trTitulo);
+
+        const trHead = document.createElement("tr");
+        const thTipo = document.createElement("th");
+        thTipo.textContent = "Tipo";
+        trHead.appendChild(thTipo);
+        COLUNAS_DEPOSITOS.forEach((nome) => {
+          const th = document.createElement("th");
+          th.textContent = nome;
+          trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+        tabela.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+          const tr = document.createElement("tr");
+          const tdTipo = document.createElement("td");
+          tdTipo.className = "celula-rotulo";
+          tdTipo.textContent = tipo;
+          tr.appendChild(tdTipo);
+
+          for (let c = 0; c < COLUNAS_DEPOSITOS.length; c++) {
+            const td = document.createElement("td");
+            if (c === COL_INSP) {
+              td.className = "col-calculada";
+              td.dataset.inspecionado = `${agente.id}-b5-r${rIndex}`;
+              td.textContent = "0";
+              tr.appendChild(td);
+              continue;
+            }
+            if (c === COLUNAS_DEPOSITOS.length - 1) {
+              td.className = "celula-input";
+              const chave = `b5-r${rIndex}-c${c}`;
+              const input = document.createElement("input");
+              input.type = "text";
+              input.value = valores[chave] || "";
+              input.addEventListener("input", () => {
+                valores[chave] = input.value;
+                salvar();
+                atualizarTotais();
+                renderizarResumo();
+              });
+              td.appendChild(input);
+              tr.appendChild(td);
+              continue;
+            }
+            td.className = "celula-input";
+            const chave = `b5-r${rIndex}-c${c}`;
+            const input = document.createElement("input");
+            input.type = "text";
+            input.inputMode = "numeric";
+            input.value = valores[chave] || "";
+            input.addEventListener("input", () => {
+              valores[chave] = input.value;
+              salvar();
+              atualizarTotais();
+              renderizarResumo();
+            });
+            td.appendChild(input);
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.classList.add("linha-total-final");
+        const tdRotuloTotal = document.createElement("td");
+        tdRotuloTotal.className = "celula-rotulo";
+        tdRotuloTotal.textContent = "TOTAL";
+        trTotal.appendChild(tdRotuloTotal);
+
+        for (let c = 0; c < COLUNAS_DEPOSITOS.length; c++) {
+          const td = document.createElement("td");
+          if (c === COL_INSP) {
+            td.className = "col-calculada";
+            td.dataset.inspecionadoTotal = agente.id;
+            td.textContent = "0";
+          } else if (c === COLUNAS_DEPOSITOS.length - 1) {
+            td.className = "col-total";
+            td.textContent = "-";
+          } else {
+            td.dataset.totalDepositoColuna = `${agente.id}-b5-c${c}`;
+            td.textContent = "0";
+          }
+          trTotal.appendChild(td);
+        }
+        tbody.appendChild(trTotal);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarColunaTotal() {
+        const coluna = document.createElement("div");
+        coluna.className = "coluna-agente total";
+        coluna.id = "colunaTotal";
+        const cab = document.createElement("div");
+        cab.className = "cabecalho-agente";
+        cab.innerHTML = "<h3>🏆 TOTAL DA EQUIPE</h3>";
+        coluna.appendChild(cab);
+
+        coluna.appendChild(criarTotalBloco1());
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarTotalBlocoSimples("b2", LINHAS_BLOCO_2));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarTotalBlocoInformados());
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarTotalBlocoSimples("b4", LINHAS_BLOCO_4));
+        coluna.appendChild(criarSeparador());
+        coluna.appendChild(criarTotalBlocoDepositos());
+        return coluna;
+      }
+
+      function criarTotalBloco1() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const tabela = document.createElement("table");
+        const thead = document.createElement("thead");
+
+        const trId = document.createElement("tr");
+        trId.className = "linha-identificacao";
+        const thData = document.createElement("th");
+        thData.colSpan = 3;
+        thData.textContent = "📅 " + formatarDataBR(diaAtual().data);
+        trId.appendChild(thData);
+        const thDia = document.createElement("th");
+        thDia.colSpan = 3;
+        thDia.textContent =
+          "🗓 " + nomeDiaExibido(diaAtual().data, estado.diaAtivo);
+        trId.appendChild(thDia);
+        const thAgente = document.createElement("th");
+        thAgente.colSpan = 3;
+        thAgente.textContent = "🏆 TOTAL";
+        trId.appendChild(thAgente);
+        thead.appendChild(trId);
+
+        const trHead = document.createElement("tr");
+        const thVazio = document.createElement("th");
+        thVazio.textContent = "";
+        trHead.appendChild(thVazio);
+        for (let i = 1; i <= 7; i++) {
+          const th = document.createElement("th");
+          th.textContent = i;
+          trHead.appendChild(th);
+        }
+        const thTotal = document.createElement("th");
+        thTotal.textContent = "TOTAL";
+        thTotal.className = "col-total";
+        trHead.appendChild(thTotal);
+        thead.appendChild(trHead);
+        tabela.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+          const tr = document.createElement("tr");
+          for (let c = 0; c < NUM_COLUNAS; c++) {
+            const td = document.createElement("td");
+            if (c === 0) {
+              td.className = "celula-rotulo";
+              td.textContent = linha.rotulo;
+            } else if (c === NUM_COLUNAS - 1) {
+              td.className = "col-total";
+              td.dataset.totalEquipeLinha = `b1-r${rIndex}`;
+              td.textContent = "0";
+            } else {
+              td.dataset.totalEquipeDia = `b1-r${rIndex}-c${c}`;
+              td.textContent = "0";
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.classList.add("linha-total-final");
+        for (let c = 0; c < NUM_COLUNAS; c++) {
+          const td = document.createElement("td");
+          if (c === 0) {
+            td.className = "celula-rotulo";
+            td.textContent = "TOTAL";
+          } else if (c === NUM_COLUNAS - 1) {
+            td.className = "col-total";
+            td.dataset.totalEquipeGeral = "1";
+            td.textContent = "0";
+          } else {
+            td.dataset.totalEquipeDiaFinal = `c${c}`;
+            td.textContent = "0";
+          }
+          trTotal.appendChild(td);
+        }
+        tbody.appendChild(trTotal);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarTotalBlocoSimples(blocoId, linhas) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const tabela = document.createElement("table");
+        const tbody = document.createElement("tbody");
+        linhas.forEach((linha, rIndex) => {
+          const tr = document.createElement("tr");
+          for (let c = 0; c < NUM_COLUNAS; c++) {
+            const td = document.createElement("td");
+            if (c === 0) {
+              td.className = "celula-rotulo";
+              td.textContent = linha.rotulo;
+            } else if (c === NUM_COLUNAS - 1) {
+              td.className = "col-total";
+              td.dataset.totalEquipeLinhaBloco = `${blocoId}-r${rIndex}`;
+              td.textContent = "0";
+            } else {
+              td.dataset.totalEquipeDiaBloco = `${blocoId}-r${rIndex}-c${c}`;
+              td.textContent = "0";
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarTotalBlocoInformados() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela";
+        const tabela = document.createElement("table");
+        const tbody = document.createElement("tbody");
+        const tr = document.createElement("tr");
+
+        const tdRot = document.createElement("td");
+        tdRot.className = "celula-rotulo";
+        tdRot.textContent = "Informados";
+        tr.appendChild(tdRot);
+
+        for (let c = 1; c <= 7; c++) {
+          const td = document.createElement("td");
+          td.className = "col-calculada";
+          td.dataset.informadoEquipeDia = `c${c}`;
+          td.textContent = "0";
+          tr.appendChild(td);
+        }
+        const tdTotal = document.createElement("td");
+        tdTotal.className = "col-total";
+        tdTotal.dataset.informadoEquipeTotal = "1";
+        tdTotal.textContent = "0";
+        tr.appendChild(tdTotal);
+        tbody.appendChild(tr);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function criarTotalBlocoDepositos() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bloco-tabela bloco-depositos";
+        const tabela = document.createElement("table");
+        const thead = document.createElement("thead");
+
+        const trTitulo = document.createElement("tr");
+        const thTitulo = document.createElement("th");
+        thTitulo.colSpan = 9;
+        thTitulo.className = "titulo-depositos";
+        thTitulo.textContent = "Depósitos";
+        trTitulo.appendChild(thTitulo);
+        thead.appendChild(trTitulo);
+
+        const trHead = document.createElement("tr");
+        const thTipo = document.createElement("th");
+        thTipo.textContent = "Tipo";
+        trHead.appendChild(thTipo);
+        COLUNAS_DEPOSITOS.forEach((nome) => {
+          const th = document.createElement("th");
+          th.textContent = nome;
+          trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+        tabela.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+          const tr = document.createElement("tr");
+          const tdTipo = document.createElement("td");
+          tdTipo.className = "celula-rotulo";
+          tdTipo.textContent = tipo;
+          tr.appendChild(tdTipo);
+
+          for (let c = 0; c < COLUNAS_DEPOSITOS.length; c++) {
+            const td = document.createElement("td");
+            if (c === COL_INSP) {
+              td.className = "col-calculada";
+              td.dataset.inspecionadoEquipe = `b5-r${rIndex}`;
+              td.textContent = "0";
+            } else if (c === COLUNAS_DEPOSITOS.length - 1) {
+              td.className = "col-total";
+              td.textContent = "-";
+            } else {
+              td.dataset.totalEquipeDeposito = `b5-r${rIndex}-c${c}`;
+              td.textContent = "0";
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.classList.add("linha-total-final");
+        const tdRot = document.createElement("td");
+        tdRot.className = "celula-rotulo";
+        tdRot.textContent = "TOTAL";
+        trTotal.appendChild(tdRot);
+
+        for (let c = 0; c < COLUNAS_DEPOSITOS.length; c++) {
+          const td = document.createElement("td");
+          if (c === COL_INSP) {
+            td.className = "col-calculada";
+            td.dataset.inspecionadoEquipeTotal = "1";
+            td.textContent = "0";
+          } else if (c === COLUNAS_DEPOSITOS.length - 1) {
+            td.className = "col-total";
+            td.textContent = "-";
+          } else {
+            td.dataset.totalEquipeDepositoFinal = `b5-c${c}`;
+            td.textContent = "0";
+          }
+          trTotal.appendChild(td);
+        }
+        tbody.appendChild(trTotal);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+        return wrapper;
+      }
+
+      function atualizarTotais() {
+        const agentes = diaAtual().agentes;
+        const ativos = agentes.filter((a) => a.ativo);
+
+        agentes.forEach((ag) => {
+          const valores = valoresDoDia(ag);
+          LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+            let resultado = 0,
+              totalSim = 0;
+            for (let c = 1; c <= 7; c++) {
+              const v = valores[`b1-r${rIndex}-c${c}`];
+              if (v === undefined || v === "") continue;
+              if (linha.contaSim) {
+                if (v === "Sim") totalSim++;
+              } else {
+                const n = Number(v);
+                if (!isNaN(n)) resultado += n;
+              }
+            }
+            const cel = document.querySelector(
+              `[data-total-linha="${ag.id}-b1-r${rIndex}"]`,
+            );
+            if (cel) cel.textContent = linha.contaSim ? totalSim : resultado;
+          });
+
+          for (let c = 1; c <= 7; c++) {
+            let soma = 0;
+            LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+              if (!linha.somaNoTotal) return;
+              const v = valores[`b1-r${rIndex}-c${c}`];
+              if (v !== undefined && v !== "") {
+                const n = Number(v);
+                if (!isNaN(n)) soma += n;
+              }
+            });
+            const cel = document.querySelector(
+              `[data-total-dia-agente="${ag.id}-c${c}"]`,
+            );
+            if (cel) cel.textContent = soma;
+          }
+
+          let totalGeral = 0;
+          for (let c = 1; c <= 7; c++) {
+            const cel = document.querySelector(
+              `[data-total-dia-agente="${ag.id}-c${c}"]`,
+            );
+            if (cel) totalGeral += Number(cel.textContent) || 0;
+          }
+          const celGeral = document.querySelector(
+            `[data-total-geral="${ag.id}"]`,
+          );
+          if (celGeral) celGeral.textContent = totalGeral;
+        });
+
+        const blocosSimples = [
+          { id: "b2", linhas: LINHAS_BLOCO_2 },
+          { id: "b4", linhas: LINHAS_BLOCO_4 },
+        ];
+        agentes.forEach((ag) => {
+          const valores = valoresDoDia(ag);
+          blocosSimples.forEach((bloco) => {
+            bloco.linhas.forEach((linha, rIndex) => {
+              let soma = 0;
+              for (let c = 1; c <= 7; c++) {
+                const v = valores[`${bloco.id}-r${rIndex}-c${c}`];
+                if (v !== undefined && v !== "") {
+                  const n = Number(v);
+                  if (!isNaN(n)) soma += n;
+                }
+              }
+              const cel = document.querySelector(
+                `[data-total-linha-bloco="${ag.id}-${bloco.id}-r${rIndex}"]`,
+              );
+              if (cel) cel.textContent = soma;
+            });
+          });
+        });
+
+        agentes.forEach((ag) => {
+          const valores = valoresDoDia(ag);
+          let totalInformado = 0;
+          for (let c = 1; c <= 7; c++) {
+            const resultado = calcularInformadoColuna(valores, c);
+            totalInformado += resultado;
+            const cel = document.querySelector(
+              `[data-informado-dia="${ag.id}-c${c}"]`,
+            );
+            if (cel) cel.textContent = resultado;
+          }
+          const celTotal = document.querySelector(
+            `[data-informado-total="${ag.id}"]`,
+          );
+          if (celTotal) celTotal.textContent = totalInformado;
+        });
+
+        agentes.forEach((ag) => {
+          const valores = valoresDoDia(ag);
+          TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+            const encontrado = num(valores[`b5-r${rIndex}-c${COL_ENCONTRADO}`]);
+            const naoInsp = num(valores[`b5-r${rIndex}-c${COL_NAO_INSP}`]);
+            const inspec = encontrado - naoInsp;
+            const cel = document.querySelector(
+              `[data-inspecionado="${ag.id}-b5-r${rIndex}"]`,
+            );
+            if (cel) cel.textContent = inspec;
+          });
+          for (let c = 0; c < COLUNAS_DEPOSITOS.length - 1; c++) {
+            if (c === COL_INSP) continue;
+            let soma = 0;
+            TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+              const v = valores[`b5-r${rIndex}-c${c}`];
+              if (v !== undefined && v !== "") {
+                const n = Number(v);
+                if (!isNaN(n)) soma += n;
+              }
+            });
+            const cel = document.querySelector(
+              `[data-total-deposito-coluna="${ag.id}-b5-c${c}"]`,
+            );
+            if (cel) cel.textContent = soma;
+          }
+          const totEnc = num(
+            document.querySelector(
+              `[data-total-deposito-coluna="${ag.id}-b5-c${COL_ENCONTRADO}"]`,
+            )?.textContent,
+          );
+          const totNI = num(
+            document.querySelector(
+              `[data-total-deposito-coluna="${ag.id}-b5-c${COL_NAO_INSP}"]`,
+            )?.textContent,
+          );
+          const celInspTot = document.querySelector(
+            `[data-inspecionado-total="${ag.id}"]`,
+          );
+          if (celInspTot) celInspTot.textContent = totEnc - totNI;
+        });
+
+        LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+          for (let c = 1; c <= 7; c++) {
+            let soma = 0,
+              sim = 0;
+            ativos.forEach((ag) => {
+              const valores = valoresDoDia(ag);
+              const v = valores[`b1-r${rIndex}-c${c}`];
+              if (v === undefined || v === "") return;
+              if (linha.contaSim) {
+                if (v === "Sim") sim++;
+              } else {
+                const n = Number(v);
+                if (!isNaN(n)) soma += n;
+              }
+            });
+            const cel = document.querySelector(
+              `[data-total-equipe-dia="b1-r${rIndex}-c${c}"]`,
+            );
+            if (cel) cel.textContent = linha.contaSim ? sim : soma;
+          }
+          let totalLinha = 0,
+            totalSimLinha = 0;
+          for (let c = 1; c <= 7; c++) {
+            const cel = document.querySelector(
+              `[data-total-equipe-dia="b1-r${rIndex}-c${c}"]`,
+            );
+            if (cel) {
+              if (linha.contaSim) totalSimLinha += Number(cel.textContent) || 0;
+              else totalLinha += Number(cel.textContent) || 0;
+            }
+          }
+          const celLinha = document.querySelector(
+            `[data-total-equipe-linha="b1-r${rIndex}"]`,
+          );
+          if (celLinha)
+            celLinha.textContent = linha.contaSim ? totalSimLinha : totalLinha;
+        });
+
+        for (let c = 1; c <= 7; c++) {
+          let soma = 0;
+          ativos.forEach((ag) => {
+            const valores = valoresDoDia(ag);
+            LINHAS_BLOCO_1.forEach((linha, rIndex) => {
+              if (!linha.somaNoTotal) return;
+              const v = valores[`b1-r${rIndex}-c${c}`];
+              if (v !== undefined && v !== "") {
+                const n = Number(v);
+                if (!isNaN(n)) soma += n;
+              }
+            });
+          });
+          const cel = document.querySelector(
+            `[data-total-equipe-dia-final="c${c}"]`,
+          );
+          if (cel) cel.textContent = soma;
+        }
+        let geral = 0;
+        for (let c = 1; c <= 7; c++) {
+          const cel = document.querySelector(
+            `[data-total-equipe-dia-final="c${c}"]`,
+          );
+          if (cel) geral += Number(cel.textContent) || 0;
+        }
+        const celGeral = document.querySelector(
+          `[data-total-equipe-geral="1"]`,
+        );
+        if (celGeral) celGeral.textContent = geral;
+
+        blocosSimples.forEach((bloco) => {
+          bloco.linhas.forEach((linha, rIndex) => {
+            for (let c = 1; c <= 7; c++) {
+              let soma = 0;
+              ativos.forEach((ag) => {
+                const valores = valoresDoDia(ag);
+                const v = valores[`${bloco.id}-r${rIndex}-c${c}`];
+                if (v !== undefined && v !== "") {
+                  const n = Number(v);
+                  if (!isNaN(n)) soma += n;
+                }
+              });
+              const cel = document.querySelector(
+                `[data-total-equipe-dia-bloco="${bloco.id}-r${rIndex}-c${c}"]`,
+              );
+              if (cel) cel.textContent = soma;
+            }
+            let totalLinha = 0;
+            for (let c = 1; c <= 7; c++) {
+              const cel = document.querySelector(
+                `[data-total-equipe-dia-bloco="${bloco.id}-r${rIndex}-c${c}"]`,
+              );
+              if (cel) totalLinha += Number(cel.textContent) || 0;
+            }
+            const celLinha = document.querySelector(
+              `[data-total-equipe-linha-bloco="${bloco.id}-r${rIndex}"]`,
+            );
+            if (celLinha) celLinha.textContent = totalLinha;
+          });
+        });
+
+        let totalInformadoEquipe = 0;
+        for (let c = 1; c <= 7; c++) {
+          let soma = 0;
+          ativos.forEach((ag) => {
+            const valores = valoresDoDia(ag);
+            soma += calcularInformadoColuna(valores, c);
+          });
+          totalInformadoEquipe += soma;
+          const cel = document.querySelector(
+            `[data-informado-equipe-dia="c${c}"]`,
+          );
+          if (cel) cel.textContent = soma;
+        }
+        const celTotalInfoEq = document.querySelector(
+          `[data-informado-equipe-total="1"]`,
+        );
+        if (celTotalInfoEq) celTotalInfoEq.textContent = totalInformadoEquipe;
+
+        TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+          let somaEnc = 0,
+            somaNI = 0;
+          ativos.forEach((ag) => {
+            const valores = valoresDoDia(ag);
+            somaEnc += num(valores[`b5-r${rIndex}-c${COL_ENCONTRADO}`]);
+            somaNI += num(valores[`b5-r${rIndex}-c${COL_NAO_INSP}`]);
+          });
+          for (let c = 0; c < COLUNAS_DEPOSITOS.length - 1; c++) {
+            if (c === COL_INSP) continue;
+            let soma = 0;
+            ativos.forEach((ag) => {
+              const valores = valoresDoDia(ag);
+              const v = valores[`b5-r${rIndex}-c${c}`];
+              if (v !== undefined && v !== "") {
+                const n = Number(v);
+                if (!isNaN(n)) soma += n;
+              }
+            });
+            const cel = document.querySelector(
+              `[data-total-equipe-deposito="b5-r${rIndex}-c${c}"]`,
+            );
+            if (cel) cel.textContent = soma;
+          }
+          const celInsp = document.querySelector(
+            `[data-inspecionado-equipe="b5-r${rIndex}"]`,
+          );
+          if (celInsp) celInsp.textContent = somaEnc - somaNI;
+        });
+
+        for (let c = 0; c < COLUNAS_DEPOSITOS.length - 1; c++) {
+          if (c === COL_INSP) continue;
+          let soma = 0;
+          TIPOS_DEPOSITOS.forEach((tipo, rIndex) => {
+            const cel = document.querySelector(
+              `[data-total-equipe-deposito="b5-r${rIndex}-c${c}"]`,
+            );
+            if (cel) soma += Number(cel.textContent) || 0;
+          });
+          const cel = document.querySelector(
+            `[data-total-equipe-deposito-final="b5-c${c}"]`,
+          );
+          if (cel) cel.textContent = soma;
+        }
+
+        const totEncEq = num(
+          document.querySelector(
+            `[data-total-equipe-deposito-final="b5-c${COL_ENCONTRADO}"]`,
+          )?.textContent,
+        );
+        const totNIEq = num(
+          document.querySelector(
+            `[data-total-equipe-deposito-final="b5-c${COL_NAO_INSP}"]`,
+          )?.textContent,
+        );
+        const celInspEqTot = document.querySelector(
+          `[data-inspecionado-equipe-total="1"]`,
+        );
+        if (celInspEqTot) celInspEqTot.textContent = totEncEq - totNIEq;
+      }
+
+      function calcularSomasDia(diaKey) {
+        const dia = semana().dias[diaKey];
+        const ativos = dia.agentes.filter((a) => a.ativo);
+        const somas = {
+          R: 0,
+          C: 0,
+          TB: 0,
+          PE: 0,
+          O: 0,
+          TOTAL: 0,
+          FECHADOS: 0,
+          RECUPERADOS: 0,
+          RECUSADOS: 0,
+          ABANDONADOS: 0,
+          INFORMADOS: 0,
+          PENDENCIAS: 0,
+          IP: 0,
+          RENDIMENTO: 0,
+          TRABALHADO: 0,
+          QUARTEIRAO: 0,
+          DEP: {},
+          DEP_TRATADOS: 0,
+          DEP_LITROS: 0,
+          DEP_GRAMAS: 0,
+          DEP_FOCADOS: 0,
+          ELIMINADOS: 0,
+        };
+        TIPOS_DEPOSITOS.forEach((t) => {
+          somas.DEP[t] = 0;
+        });
+
+        let qtdTrabalhou = 0;
+        let qtdQuarteirao = 0;
+
+        ativos.forEach((ag) => {
+          const valores = ag.valores || {};
+          let somaAgente = 0;
+
+          for (let c = 1; c <= 7; c++) {
+            const r = num(valores[`b1-r2-c${c}`]);
+            const cc = num(valores[`b1-r3-c${c}`]);
+            const tb = num(valores[`b1-r4-c${c}`]);
+            const o = num(valores[`b1-r6-c${c}`]);
+
+            somas.R += r;
+            somas.C += cc;
+            somas.TB += tb;
+            somas.PE += num(valores[`b1-r5-c${c}`]);
+            somas.O += o;
+
+            somaAgente += r + cc + tb + o;
+
+            somas.FECHADOS += num(valores[`b2-r0-c${c}`]);
+            somas.RECUPERADOS += num(valores[`b2-r1-c${c}`]);
+            somas.RECUSADOS += num(valores[`b2-r2-c${c}`]);
+            somas.ABANDONADOS += num(valores[`b2-r3-c${c}`]);
+            somas.ELIMINADOS += num(valores[`b4-r0-c${c}`]);
+
+            if ((valores[`b1-r1-c${c}`] || "") === "Sim") qtdQuarteirao++;
+          }
+
+          if (somaAgente > 0) qtdTrabalhou++;
+
+          TIPOS_DEPOSITOS.forEach((tipo, i) => {
+            somas.DEP[tipo] += num(valores[`b5-r${i}-c${COL_TOTAL_DEP}`]);
+            somas.DEP_TRATADOS += num(valores[`b5-r${i}-c${COL_TRATADOS}`]);
+            somas.DEP_LITROS += num(valores[`b5-r${i}-c${COL_LITROS}`]);
+            somas.DEP_GRAMAS += num(valores[`b5-r${i}-c${COL_GRAMAS}`]);
+            somas.DEP_FOCADOS += num(valores[`b5-r${i}-c${COL_FOCADOS}`]);
+          });
+        });
+
+        somas.TRABALHADO = qtdTrabalhou;
+        somas.QUARTEIRAO = qtdQuarteirao;
+
+        somas.TOTAL = somas.R + somas.C + somas.TB + somas.O;
+
+        somas.INFORMADOS =
+          somas.R +
+          somas.C +
+          somas.TB +
+          somas.O +
+          somas.FECHADOS +
+          somas.RECUSADOS +
+          somas.ABANDONADOS -
+          somas.RECUPERADOS;
+
+        somas.PENDENCIAS =
+          somas.FECHADOS +
+          somas.RECUSADOS +
+          somas.ABANDONADOS -
+          somas.RECUPERADOS;
+
+        if (somas.INFORMADOS !== 0) {
+          somas.IP = (100 / somas.INFORMADOS) * somas.PENDENCIAS;
+        } else {
+          somas.IP = 0;
+        }
+
+        if (somas.TRABALHADO !== 0) {
+          somas.RENDIMENTO = somas.TOTAL / somas.TRABALHADO;
+        } else {
+          somas.RENDIMENTO = null;
+        }
+
+        somas.DEP_TOTAL = TIPOS_DEPOSITOS.reduce((s, t) => s + somas.DEP[t], 0);
+
+        return somas;
+      }
+
+      function fmtRendimento(v) {
+        if (v === null || v === undefined || isNaN(v)) return "—";
+        return Number(v).toFixed(1);
+      }
+
+      function fmtPct(v) {
+        if (v === null || v === undefined || isNaN(v)) return "—";
+        return Number(v).toFixed(1) + "%";
+      }
+
+      function renderizarResumo() {
+        const wrapper = document.getElementById("resumoWrapper");
+        wrapper.innerHTML = "";
+
+        const tabela = document.createElement("table");
+        tabela.className = "resumo-tabela";
+
+        const colgroup = document.createElement("colgroup");
+        LARGURAS_COLUNAS.forEach((cls) => {
+          const col = document.createElement("col");
+          col.className = cls;
+          colgroup.appendChild(col);
+        });
+        tabela.appendChild(colgroup);
+
+        const thead = document.createElement("thead");
+        const trHead = document.createElement("tr");
+
+        COLUNAS_1_5.forEach((titulo) => {
+          const th = document.createElement("th");
+          th.className = "cabecalho-titulo";
+          th.textContent = titulo;
+          trHead.appendChild(th);
+        });
+
+        COLUNAS_6_11.forEach((titulo) => {
+          const th = document.createElement("th");
+          th.className =
+            titulo === "TOTAL" ? "cabecalho-destaque" : "cabecalho-titulo";
+          th.textContent = titulo;
+          trHead.appendChild(th);
+        });
+
+        COLUNAS_12_20.forEach((titulo) => {
+          const th = document.createElement("th");
+          if (
+            titulo === "Inf." ||
+            titulo === "Pend." ||
+            titulo === "IP" ||
+            titulo === "Rend."
+          ) {
+            th.className = "cabecalho-calculado";
+          } else {
+            th.className = "cabecalho-titulo";
+          }
+          th.textContent = titulo;
+          trHead.appendChild(th);
+        });
+
+        COLUNAS_21_28.forEach((titulo) => {
+          const th = document.createElement("th");
+          th.className =
+            titulo === "TOTAL" ? "cabecalho-destaque" : "cabecalho-titulo";
+          th.textContent = titulo;
+          trHead.appendChild(th);
+        });
+
+        COLUNAS_29_35.forEach((titulo) => {
+          const th = document.createElement("th");
+          th.className = "cabecalho-titulo";
+          th.textContent = titulo;
+          trHead.appendChild(th);
+        });
+
+        thead.appendChild(trHead);
+        tabela.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        const totais = {
+          R: 0,
+          C: 0,
+          TB: 0,
+          PE: 0,
+          O: 0,
+          TOTAL: 0,
+          FECHADOS: 0,
+          RECUPERADOS: 0,
+          RECUSADOS: 0,
+          ABANDONADOS: 0,
+          INFORMADOS: 0,
+          PENDENCIAS: 0,
+          TRABALHADO: 0,
+          QUARTEIRAO: 0,
+          DEP: {},
+          DEP_TRATADOS: 0,
+          DEP_LITROS: 0,
+          DEP_GRAMAS: 0,
+          DEP_FOCADOS: 0,
+          ELIMINADOS: 0,
+          SUPERVISAO: 0,
+          PROGRAMADOS: 0,
+          TRATADOS_GERAL: 0,
+        };
+        TIPOS_DEPOSITOS.forEach((t) => {
+          totais.DEP[t] = 0;
+        });
+
+        DIAS_SEMANA.forEach((dia) => {
+          const tr = document.createElement("tr");
+
+          const tdData = document.createElement("td");
+          tdData.className = "celula-data";
+          tdData.textContent = formatarDataBR(semana().dias[dia].data);
+          tr.appendChild(tdData);
+
+          const tdDia = document.createElement("td");
+          tdDia.className = "celula-dia-semana";
+          tdDia.textContent = nomeDiaExibido(semana().dias[dia].data, dia);
+          tr.appendChild(tdDia);
+
+          const tdProg = document.createElement("td");
+          tdProg.className = "celula-dado";
+          const progVal = semana().dias[dia].programados;
+          tdProg.textContent =
+            progVal === undefined || progVal === "" || progVal === null
+              ? "—"
+              : progVal;
+          tr.appendChild(tdProg);
+          totais.PROGRAMADOS += num(progVal);
+
+          const s = calcularSomasDia(dia);
+
+          const tdTrab = document.createElement("td");
+          tdTrab.className = "celula-dado";
+          tdTrab.textContent = s.TRABALHADO;
+          tr.appendChild(tdTrab);
+
+          const tdQuart = document.createElement("td");
+          tdQuart.className = "celula-dado";
+          tdQuart.textContent = s.QUARTEIRAO;
+          tr.appendChild(tdQuart);
+
+          [s.R, s.C, s.TB, s.PE, s.O].forEach((valor) => {
+            const td = document.createElement("td");
+            td.className = "celula-dado";
+            td.textContent = valor;
+            tr.appendChild(td);
+          });
+
+          const tdTotal = document.createElement("td");
+          tdTotal.className = "col-total";
+          tdTotal.textContent = s.TOTAL;
+          tr.appendChild(tdTotal);
+
+          const tdTrat = document.createElement("td");
+          tdTrat.className = "celula-editavel";
+          const inputTrat = document.createElement("input");
+          inputTrat.type = "number";
+          inputTrat.inputMode = "numeric";
+          inputTrat.placeholder = "0";
+          inputTrat.value = getResumoValor(`tratados-${dia}`, "");
+          inputTrat.addEventListener("input", () => {
+            setResumoValor(`tratados-${dia}`, inputTrat.value);
+            atualizarTotalTratados();
+          });
+          tdTrat.appendChild(inputTrat);
+          tr.appendChild(tdTrat);
+          totais.TRATADOS_GERAL += num(inputTrat.value);
+
+          [s.FECHADOS, s.RECUPERADOS, s.RECUSADOS, s.ABANDONADOS].forEach(
+            (valor) => {
+              const td = document.createElement("td");
+              td.className = "celula-dado";
+              td.textContent = valor;
+              tr.appendChild(td);
+            },
+          );
+
+          const tdInfo = document.createElement("td");
+          tdInfo.className = "col-calculada";
+          tdInfo.textContent = s.INFORMADOS;
+          tr.appendChild(tdInfo);
+
+          const tdPend = document.createElement("td");
+          tdPend.className = "col-calculada";
+          tdPend.textContent = s.PENDENCIAS;
+          tr.appendChild(tdPend);
+
+          const tdIP = document.createElement("td");
+          tdIP.className = "col-calculada";
+          tdIP.textContent = fmtPct(s.IP);
+          tr.appendChild(tdIP);
+
+          const tdRend = document.createElement("td");
+          tdRend.className = "col-calculada";
+          tdRend.textContent = fmtRendimento(s.RENDIMENTO);
+          tr.appendChild(tdRend);
+
+          TIPOS_DEPOSITOS.forEach((tipo) => {
+            const td = document.createElement("td");
+            td.className = "celula-dado";
+            td.textContent = s.DEP[tipo];
+            tr.appendChild(td);
+          });
+
+          const tdTotalDep = document.createElement("td");
+          tdTotalDep.className = "col-total";
+          tdTotalDep.textContent = s.DEP_TOTAL;
+          tr.appendChild(tdTotalDep);
+
+          [
+            s.DEP_TRATADOS,
+            s.DEP_LITROS,
+            s.DEP_GRAMAS,
+            s.ELIMINADOS,
+            s.DEP_FOCADOS,
+          ].forEach((valor) => {
+            const td = document.createElement("td");
+            td.className = "celula-dado";
+            td.textContent = valor;
+            tr.appendChild(td);
+          });
+
+          const tdSup = document.createElement("td");
+          tdSup.className = "celula-editavel";
+          const inputSup = document.createElement("input");
+          inputSup.type = "number";
+          inputSup.inputMode = "numeric";
+          inputSup.placeholder = "0";
+          inputSup.value = getResumoValor(`supervisao-${dia}`, "");
+          inputSup.addEventListener("input", () => {
+            setResumoValor(`supervisao-${dia}`, inputSup.value);
+            atualizarTotalSupervisao();
+          });
+          tdSup.appendChild(inputSup);
+          tr.appendChild(tdSup);
+          totais.SUPERVISAO += num(inputSup.value);
+
+          const tdObs = document.createElement("td");
+          tdObs.className = "celula-editavel";
+          const inputObs = document.createElement("input");
+          inputObs.type = "text";
+          inputObs.className = "texto-livre";
+          inputObs.placeholder = "Observação";
+          inputObs.value = getResumoValor(`observacao-${dia}`, "");
+          inputObs.addEventListener("input", () => {
+            setResumoValor(`observacao-${dia}`, inputObs.value);
+          });
+          tdObs.appendChild(inputObs);
+          tr.appendChild(tdObs);
+
+          totais.R += s.R;
+          totais.C += s.C;
+          totais.TB += s.TB;
+          totais.PE += s.PE;
+          totais.O += s.O;
+          totais.TOTAL += s.TOTAL;
+          totais.FECHADOS += s.FECHADOS;
+          totais.RECUPERADOS += s.RECUPERADOS;
+          totais.RECUSADOS += s.RECUSADOS;
+          totais.ABANDONADOS += s.ABANDONADOS;
+          totais.INFORMADOS += s.INFORMADOS;
+          totais.PENDENCIAS += s.PENDENCIAS;
+          totais.TRABALHADO += s.TRABALHADO;
+          totais.QUARTEIRAO += s.QUARTEIRAO;
+          totais.DEP_TRATADOS += s.DEP_TRATADOS;
+          totais.DEP_LITROS += s.DEP_LITROS;
+          totais.DEP_GRAMAS += s.DEP_GRAMAS;
+          totais.DEP_FOCADOS += s.DEP_FOCADOS;
+          totais.ELIMINADOS += s.ELIMINADOS;
+          TIPOS_DEPOSITOS.forEach((tipo) => {
+            totais.DEP[tipo] += s.DEP[tipo];
+          });
+
+          tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.classList.add("linha-total-resumo");
+
+        const tdRot = document.createElement("td");
+        tdRot.className = "celula-rotulo-dia";
+        tdRot.textContent = "Total";
+        trTotal.appendChild(tdRot);
+
+        const tdVaziaDia = document.createElement("td");
+        tdVaziaDia.className = "celula-vazia";
+        tdVaziaDia.textContent = "—";
+        trTotal.appendChild(tdVaziaDia);
+
+        const tdProgTot = document.createElement("td");
+        tdProgTot.className = "celula-dado";
+        tdProgTot.style.fontWeight = "700";
+        tdProgTot.textContent = totais.PROGRAMADOS || "—";
+        trTotal.appendChild(tdProgTot);
+
+        const tdTrabTot = document.createElement("td");
+        tdTrabTot.className = "celula-dado";
+        tdTrabTot.style.fontWeight = "700";
+        tdTrabTot.textContent = totais.TRABALHADO;
+        trTotal.appendChild(tdTrabTot);
+
+        const tdQuartTot = document.createElement("td");
+        tdQuartTot.className = "celula-dado";
+        tdQuartTot.style.fontWeight = "700";
+        tdQuartTot.textContent = totais.QUARTEIRAO;
+        trTotal.appendChild(tdQuartTot);
+
+        [totais.R, totais.C, totais.TB, totais.PE, totais.O].forEach(
+          (valor) => {
+            const td = document.createElement("td");
+            td.className = "celula-dado";
+            td.style.fontWeight = "700";
+            td.textContent = valor;
+            trTotal.appendChild(td);
+          },
+        );
+
+        const tdTotalGeral = document.createElement("td");
+        tdTotalGeral.className = "col-total";
+        tdTotalGeral.textContent = totais.TOTAL;
+        trTotal.appendChild(tdTotalGeral);
+
+        const tdTratTot = document.createElement("td");
+        tdTratTot.className = "celula-dado";
+        tdTratTot.style.fontWeight = "700";
+        tdTratTot.dataset.totalTratados = "1";
+        tdTratTot.textContent = totais.TRATADOS_GERAL;
+        trTotal.appendChild(tdTratTot);
+
+        [
+          totais.FECHADOS,
+          totais.RECUPERADOS,
+          totais.RECUSADOS,
+          totais.ABANDONADOS,
+        ].forEach((valor) => {
+          const td = document.createElement("td");
+          td.className = "celula-dado";
+          td.style.fontWeight = "700";
+          td.textContent = valor;
+          trTotal.appendChild(td);
+        });
+
+        const tdInfoTotal = document.createElement("td");
+        tdInfoTotal.className = "col-calculada";
+        tdInfoTotal.textContent = totais.INFORMADOS;
+        trTotal.appendChild(tdInfoTotal);
+
+        const tdPendTotal = document.createElement("td");
+        tdPendTotal.className = "col-calculada";
+        tdPendTotal.textContent = totais.PENDENCIAS;
+        trTotal.appendChild(tdPendTotal);
+
+        let ipTotal = 0;
+        if (totais.INFORMADOS !== 0) {
+          ipTotal = (100 / totais.INFORMADOS) * totais.PENDENCIAS;
+        }
+        const tdIPTotal = document.createElement("td");
+        tdIPTotal.className = "col-calculada";
+        tdIPTotal.textContent = fmtPct(ipTotal);
+        trTotal.appendChild(tdIPTotal);
+
+        let rendTotal = null;
+        if (totais.TRABALHADO !== 0) {
+          rendTotal = totais.TOTAL / totais.TRABALHADO;
+        }
+        const tdRendTotal = document.createElement("td");
+        tdRendTotal.className = "col-calculada";
+        tdRendTotal.textContent = fmtRendimento(rendTotal);
+        trTotal.appendChild(tdRendTotal);
+
+        TIPOS_DEPOSITOS.forEach((tipo) => {
+          const td = document.createElement("td");
+          td.className = "celula-dado";
+          td.style.fontWeight = "700";
+          td.textContent = totais.DEP[tipo];
+          trTotal.appendChild(td);
+        });
+
+        const depTotalGeral = TIPOS_DEPOSITOS.reduce(
+          (s, t) => s + totais.DEP[t],
+          0,
+        );
+        const tdTotalDepGeral = document.createElement("td");
+        tdTotalDepGeral.className = "col-total";
+        tdTotalDepGeral.textContent = depTotalGeral;
+        trTotal.appendChild(tdTotalDepGeral);
+
+        [
+          totais.DEP_TRATADOS,
+          totais.DEP_LITROS,
+          totais.DEP_GRAMAS,
+          totais.ELIMINADOS,
+          totais.DEP_FOCADOS,
+        ].forEach((valor) => {
+          const td = document.createElement("td");
+          td.className = "celula-dado";
+          td.style.fontWeight = "700";
+          td.textContent = valor;
+          trTotal.appendChild(td);
+        });
+
+        const tdSupTot = document.createElement("td");
+        tdSupTot.className = "celula-dado";
+        tdSupTot.style.fontWeight = "700";
+        tdSupTot.dataset.totalSupervisao = "1";
+        tdSupTot.textContent = totais.SUPERVISAO;
+        trTotal.appendChild(tdSupTot);
+
+        const tdObsTot = document.createElement("td");
+        tdObsTot.className = "celula-vazia";
+        tdObsTot.textContent = "—";
+        trTotal.appendChild(tdObsTot);
+
+        tbody.appendChild(trTotal);
+        tabela.appendChild(tbody);
+        wrapper.appendChild(tabela);
+      }
+
+      function atualizarTotalSupervisao() {
+        const cel = document.querySelector("[data-total-supervisao]");
+        if (cel) {
+          const total = DIAS_SEMANA.reduce(
+            (s, d) => s + num(getResumoValor(`supervisao-${d}`, "")),
+            0,
+          );
+          cel.textContent = total;
+        }
+      }
+
+      function atualizarTotalTratados() {
+        const cel = document.querySelector("[data-total-tratados]");
+        if (cel) {
+          const total = DIAS_SEMANA.reduce(
+            (s, d) => s + num(getResumoValor(`tratados-${d}`, "")),
+            0,
+          );
+          cel.textContent = total;
+        }
+      }
+
+      function toggleAgente(id) {
+        const ag = diaAtual().agentes.find((a) => a.id === id);
+        if (!ag) return;
+        ag.ativo = !ag.ativo;
+        salvar();
+        renderizar();
+        atualizarTotais();
+      }
+
+      function adicionarAgente() {
+        const agentes = diaAtual().agentes;
+        const numero = agentes.length + 1;
+        const nome = prompt("Nome do novo agente:", "Agente " + numero);
+        if (nome === null) return;
+        const nomeFinal = nome.trim() || "Agente " + numero;
+        agentes.push(criarAgente(nomeFinal));
+        salvar();
+        renderizar();
+        atualizarTotais();
+      }
+
+      function irParaSemana(numero) {
+        const key = String(numero);
+        if (!estado.semanas[key]) estado.semanas[key] = criarSemana();
+        estado.semanaAtiva = key;
+        salvar();
+        renderizar();
+        atualizarTotais();
+      }
+
+      function semanaAnterior() {
+        irParaSemana(Number(estado.semanaAtiva) - 1);
+      }
+      function semanaProxima() {
+        irParaSemana(Number(estado.semanaAtiva) + 1);
+      }
+
+      function novaSemana() {
+        const numeros = Object.keys(estado.semanas).map(Number);
+        const maior = Math.max(...numeros);
+        const sugestao = prompt("Número da nova semana:", String(maior + 1));
+        if (sugestao === null) return;
+        const numero = Number(sugestao);
+        if (isNaN(numero) || numero <= 0) {
+          alert("Número inválido.");
+          return;
+        }
+        if (estado.semanas[String(numero)]) {
+          alert("Essa semana já existe. Navegando até ela.");
+          estado.semanaAtiva = String(numero);
+          salvar();
+          renderizar();
+          atualizarTotais();
+          return;
+        }
+        estado.semanas[String(numero)] = criarSemana();
+        estado.semanaAtiva = String(numero);
+        salvar();
+        renderizar();
+        atualizarTotais();
+      }
+
+      function mostrarDataHoje() {
+        const hoje = new Date();
+        const opcoes = {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        };
+        document.getElementById("dataHoje").textContent =
+          hoje.toLocaleDateString("pt-BR", opcoes);
+      }
+
+      function iniciarAbas() {
+        const botoes = document.querySelectorAll(".aba");
+        const secoes = document.querySelectorAll(".conteudo-aba");
+        botoes.forEach((botao) => {
+          botao.addEventListener("click", () => {
+            const alvo = botao.dataset.aba;
+            botoes.forEach((b) => b.classList.remove("ativa"));
+            botao.classList.add("ativa");
+            secoes.forEach((s) => s.classList.remove("ativo"));
+            document.getElementById("aba-" + alvo).classList.add("ativo");
+          });
+        });
+      }
+
+      function iniciarAbasDias() {
+        document.querySelectorAll(".aba-dia").forEach((botao) => {
+          botao.addEventListener("click", () => {
+            estado.diaAtivo = botao.dataset.dia;
+            salvar();
+            renderizar();
+            atualizarTotais();
+          });
+        });
+      }
+
+      function iniciarDataDia() {
+        const inputData = document.getElementById("dataDia");
+        inputData.addEventListener("change", () => {
+          diaAtual().data = inputData.value;
+          salvar();
+          renderizar();
+          atualizarTotais();
+        });
+      }
+
+      function iniciarProgramadosDia() {
+        const inputProg = document.getElementById("programadosDia");
+        inputProg.addEventListener("input", () => {
+          diaAtual().programados = inputProg.value;
+          salvar();
+          renderizarResumo();
+        });
+      }
+
+      function iniciarCabecalhoResumo() {
+        document.querySelectorAll("[data-cab]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const k = input.dataset.cab;
+            if (!semana().cabecalho) semana().cabecalho = criarCabecalhoVazio();
+            semana().cabecalho[k] = input.value;
+            salvar();
+          });
+        });
+      }
+
+      function iniciarRodape() {
+        document.querySelectorAll("[data-rodape]").forEach((el) => {
+          el.addEventListener("input", () => {
+            const k = el.dataset.rodape;
+            if (!semana().rodape) semana().rodape = criarRodapeVazio();
+            semana().rodape[k] = el.value;
+            salvar();
+          });
+        });
+      }
+
+      function iniciarBotaoPDF() {
+        document
+          .getElementById("btnImprimirPDF")
+          .addEventListener("click", () => {
+            window.print();
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        mostrarDataHoje();
+        iniciarAbas();
+        carregar();
+        iniciarAbasDias();
+        iniciarDataDia();
+        iniciarProgramadosDia();
+        iniciarCabecalhoResumo();
+        iniciarRodape();
+        iniciarBotaoPDF();
+        renderizar();
+        atualizarTotais();
+
+        document
+          .getElementById("btnAdicionarAgente")
+          .addEventListener("click", adicionarAgente);
+        document
+          .getElementById("btnSemanaAnterior")
+          .addEventListener("click", semanaAnterior);
+        document
+          .getElementById("btnSemanaProxima")
+          .addEventListener("click", semanaProxima);
+        document
+          .getElementById("btnNovaSemana")
+          .addEventListener("click", novaSemana);
+        document
+          .getElementById("btnSemanaAnteriorResumo")
+          .addEventListener("click", semanaAnterior);
+        document
+          .getElementById("btnSemanaProximaResumo")
+          .addEventListener("click", semanaProxima);
+      });
+    </script>
+  </body>
+</html>
